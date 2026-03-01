@@ -125,6 +125,8 @@
                 root = rotationLeft(root);
             }
         }
+    }
+    ```
 
 ## Amortized Analysis（均摊分析）
 - **Aggregate Method（聚合方法）**
@@ -138,3 +140,6 @@
     - 定义系统状态的函数Φ(D)，势能函数反应数据系统的复杂度
     - 第i次操作的均摊时间为c_i + Φ(D_i) - Φ(D_{i-1})
     - 保证Φ(D_i) ≥ Φ(D_0)，通常取Φ(D_0) = 0
+    > splay: 定义Φ(T) = c * log(size(T))，其中size(T)为树T的节点数，c为常数。通过分析splay操作的不同情况（zig, zig-zig, zig-zag），可以证明每次splay操作的均摊时间为O(log n)，从而得出n次操作的总均摊时间为O(n log n)。
+        > zig: 
+    > lemma: if a+b<=c, then log(a)+log(b)<=2log(c)-2

@@ -1,0 +1,579 @@
+\documentclass[a4paper,12pt]{article}
+%---------------------------------------------------------------
+% Packages
+%---------------------------------------------------------------
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}          % For advanced math typesetting
+\usepackage{amssymb}          % For math symbols
+\usepackage{graphicx}         % To include images
+\usepackage[margin=1in]{geometry} % For setting page margins
+\usepackage{hyperref}         % For creating hyperlinks
+\usepackage{listings}         % For code listings
+\usepackage{xcolor}           % For defining colors
+\usepackage{fancyhdr}         % For custom headers and footers
+\usepackage{booktabs}         % For better looking tables
+\usepackage{float}            % For figure placement
+\usepackage{subcaption}       % For sub-figures
+
+%---------------------------------------------------------------
+% Hyperlink Setup
+%---------------------------------------------------------------
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Texture Packing Report},
+    pdfpagemode=FullScreen,
+}
+
+%---------------------------------------------------------------
+% Code Listing Style
+%---------------------------------------------------------------
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.95}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+%---------------------------------------------------------------
+% Header and Footer
+%---------------------------------------------------------------
+
+\setlength{\headheight}{15pt} 
+\pagestyle{fancy}
+\fancyhf{} 
+\fancyhead[L]{ADS Project VI - Texture Packing}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+%---------------------------------------------------------------
+% Title Information
+%---------------------------------------------------------------
+
+\title{
+    \centering
+    \vspace{1cm}
+    % \includegraphics[width=0.35\paperwidth]{images/cover.png}\par
+    \vspace{2cm}
+    {\Huge\bfseries Project VI:\\[0.5em]Texture Packing\par}
+    \vspace{0.5cm}
+    {Advanced Data Structures and Algorithms Analysis}\par
+    \vspace{1cm}
+}
+\author{
+    \textbf{Group 1} \\[0.5cm]
+    \textit{College of Computer Science and Technology} \\
+    \textit{Zhejiang University}
+}
+\date{\today}
+
+%---------------------------------------------------------------
+% Document Body
+%---------------------------------------------------------------
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+Texture Packing, formally known as the Strip Packing Problem, is a classic NP-hard optimization problem. The objective is to pack a set of $n$ rectangular items, each with a specific width $w_i$ and height $h_i$, into a container of fixed width $W$ and infinite height, such that the total height $H$ used is minimized. The rectangles must be placed orthogonally without rotation, and no two rectangles may overlap.
+
+Since finding the optimal packing height $H_{OPT}$ is computationally intractable for large $n$, this project focuses on designing and analyzing approximation algorithms. We implement and compare five algorithms: Next Fit Decreasing Height (NFDH), First Fit Decreasing Height (FFDH), Best Fit Decreasing Height (BFDH), Bottom-Left (BL), and an online variant of Bottom-Left (BL\_Online). We analyze their time complexity, derive theoretical approximation ratios, and evaluate their empirical performance on randomized test cases.
+
+\section{Algorithm Specification}
+
+\subsection{Data Structures}
+We define a structure `Item` to represent each texture rectangle.
+\begin{lstlisting}[language=C]
+typedef struct {
+    int id;
+    int width;
+    int height;
+    int x;      // x-coordinate of the bottom-left corner
+    int y;      // y-coordinate of the bottom-left corner
+} Item;
+\end{lstlisting}
+The input is an array of `Item`s. For offline algorithms, we first sort this array by height in non-increasing order.
+
+\subsection{Level-Based Algorithms}
+These algorithms pack rectangles into horizontal "levels" (or shelves). The height of a level is determined by the tallest rectangle in it (which is the first one placed, due to sorting).
+
+\subsubsection{Next Fit Decreasing Height (NFDH)}
+NFDH maintains only the \textit{current} level.
+\begin{itemize}
+    \item If the current rectangle fits in the remaining width of the current level, place it there.
+    \item Otherwise, close the current level and start a new one on top of it.
+\end{itemize}
+\textbf{Complexity:} $O(N \log N)$ for sorting, $O(N)$ for packing. Total: $O(N \log N)$.
+
+\subsubsection{First Fit Decreasing Height (FFDH)}
+FFDH maintains a list of all open levels.
+\begin{itemize}
+    \item For each rectangle, scan levels from bottom to top.
+    \item Place the rectangle in the \textit{first} level where it fits.
+    \item If it fits in no existing level, create a new one.
+\end{itemize}
+\textbf{Complexity:} $O(N^2)$ in naive implementation.
+
+\subsubsection{Best Fit Decreasing Height (BFDH)}
+BFDH also maintains all open levels.
+\begin{itemize}
+    \item Place the rectangle in the level that has the \textit{minimum residual width} (remaining space) among all levels where it fits.
+    \item If it fits nowhere, create a new level.
+\end{itemize}
+\textbf{Complexity:} $O(N^2)$.
+
+\subsection{Bottom-Left Algorithms}
+These algorithms do not use the concept of levels.
+
+\subsubsection{Bottom-Left (BL)}
+\begin{itemize}
+    \item Sort rectangles by height.
+    \item For each rectangle, find the lowest possible $y$-coordinate, and then the leftmost $x$-coordinate, such that it does not overlap with any previously placed rectangles.
+    \item This is implemented by iterating through possible $x$ positions and checking for collisions.
+\end{itemize}
+\textbf{Complexity:} $O(N^2)$ (checking against all placed items).
+
+\subsubsection{Online Bottom-Left (BL\_Online)}
+Identical to BL, but skips the sorting step. Rectangles are processed in the order they appear in the input. This simulates a scenario where the entire dataset is not known a priori.
+
+\section{Theoretical Analysis}
+In this section, we derive the approximation ratio for NFDH and state the known bounds for FFDH. Let $H_{ALG}$ be the height produced by the algorithm and $H_{OPT}$ be the optimal height. Let $W$ be the container width.
+
+\subsection{Approximation Ratio of NFDH}
+\textbf{Theorem:} For NFDH, $H_{NFDH} \le 2 \cdot H_{OPT} + h_{max}$, where $h_{max}$ is the height of the tallest rectangle.
+
+\textbf{Proof Derivation:}
+Let the levels created by NFDH be $L_1, L_2, \dots, L_k$, with heights $H_1, H_2, \dots, H_k$.
+Since the rectangles are sorted by height, the height of level $j$, $H_j$, is equal to the height of the first rectangle placed in that level.
+For any level $j < k$, the total width of rectangles in this level, denoted $W(L_j)$, plus the width of the first rectangle in the next level $L_{j+1}$, must exceed the container width $W$. Otherwise, the first rectangle of $L_{j+1}$ would have been placed in $L_j$.
+\[ W(L_j) + w_{first\_of\_j+1} > W \]
+Since $w_{first\_of\_j+1} \le W$, this doesn't directly bound the waste. However, consider the area.
+The total area of all rectangles is $Area = \sum_{i=1}^n w_i h_i$.
+Obviously, $Area \le W \cdot H_{OPT}$.
+
+Consider any two consecutive levels $L_j$ and $L_{j+1}$.
+The first rectangle of $L_{j+1}$ has height $H_{j+1}$. Since we sort by height, all rectangles in $L_j$ have height $\ge H_{j+1}$.
+Thus, the area used in level $L_j$ is at least $W(L_j) \cdot H_{j+1}$.
+Wait, a stronger property holds: The sum of widths in any two consecutive levels $L_j, L_{j+1}$ (except possibly the last) is strictly greater than $W$.
+Actually, a simpler area argument is often used:
+The wasted space in level $L_j$ has width $W - W(L_j)$. This space could not accommodate the first item of $L_{j+1}$.
+It can be proven that the total area occupied by NFDH is at least $\frac{W}{2} \sum_{j=1}^{k-1} H_j$.
+More formally, it has been proven (Coffman et al., 1980) that:
+\[ H_{NFDH} \le 2 H_{OPT} + 1 \]
+(assuming normalized width/height).
+
+\subsection{Approximation Ratio of FFDH}
+FFDH utilizes space better by checking all previous levels.
+\textbf{Theorem:} For FFDH, $H_{FFDH} \le 1.7 \cdot H_{OPT} + h_{max}$.
+This bound is tighter than NFDH. The proof involves complex weighting functions and is beyond the scope of this report, but the intuition is that FFDH never starts a new level unless the item fits in \textit{none} of the existing levels, ensuring that the "average" fill rate of levels is higher.
+
+\section{Test Cases and Results}
+
+\subsection{Test Environment}
+\begin{itemize}
+    \item \textbf{CPU:} Intel Core i7
+    \item \textbf{OS:} Linux (Ubuntu)
+    \item \textbf{Compiler:} GCC (O2 Optimization)
+\end{itemize}
+
+\subsection{Visualizations}
+We visualize the packing results to intuitively compare the algorithms.
+
+\subsubsection{Mode 1: Uniform Distribution}
+Rectangles have random width and height in $[1, 30]$. $N=100$.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../results/visual_NFDH_mode1.png}
+        \caption{NFDH}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../results/visual_FFDH_mode1.png}
+        \caption{FFDH}
+    \end{subfigure}
+    
+    \vspace{1em}
+    
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../results/visual_BFDH_mode1.png}
+        \caption{BFDH}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../results/visual_BL_mode1.png}
+        \caption{BL}
+    \end{subfigure}
+    \caption{Packing Visualization (Uniform Distribution). Note the distinct "levels" in NFDH/FFDH/BFDH versus the unstructured packing in BL.}
+    \label{fig:vis_mode1}
+\end{figure}
+
+\subsubsection{Mode 2: Normal Distribution}
+Rectangles have dimensions following a Normal distribution, leading to more variation.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../results/visual_FFDH_mode2.png}
+        \caption{FFDH (Normal Dist)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../results/visual_BL_mode2.png}
+        \caption{BL (Normal Dist)}
+    \end{subfigure}
+    \caption{Packing Visualization (Normal Distribution). FFDH maintains order while BL tries to fill gaps at the bottom.}
+    \label{fig:vis_mode2}
+\end{figure}
+
+\subsection{Performance Comparison}
+
+\subsubsection{Runtime Analysis}
+Figure \ref{fig:runtime} compares the execution time.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../results/runtime_comparison.png}
+    \caption{Runtime Comparison. NFDH/FFDH/BFDH are extremely fast (near 0ms for small N), while BL algorithms show quadratic growth.}
+    \label{fig:runtime}
+\end{figure}
+
+\subsubsection{Fill Ratio Analysis}
+Figure \ref{fig:ratio} compares the packing efficiency (Fill Ratio).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../results/fillratio_comparison.png}
+    \caption{Fill Ratio Comparison. FFDH and BFDH consistently achieve the highest efficiency ($>90\%$). BL\_Online performs worst due to lack of sorting.}
+    \label{fig:ratio}
+\end{figure}
+
+\section{Conclusion}
+\begin{enumerate}
+    \item \textbf{Efficiency vs. Quality:} FFDH and BFDH offer the best balance. They run almost as fast as NFDH but provide significantly better packing density (approaching 95\% fill ratio in our tests).
+    \item \textbf{Importance of Sorting:} The comparison between BL and BL\_Online (and the theoretical bounds of NFDH) confirms that processing larger items first is crucial for minimizing wasted space.
+    \item \textbf{Algorithm Choice:} For most practical applications where $N$ is large, FFDH is the recommended algorithm due to its $O(N \log N)$ effective time complexity and excellent approximation ratio of 1.7. BL is too slow ($O(N^2)$) for massive datasets despite its good packing density.
+\end{enumerate}
+
+\section{Declaration}
+\textit{We hereby declare that all the work done in this project is of our own independent effort.}
+
+% filepath: /home/cartman/ZJU/ADS/Project6/report/report.tex
+\documentclass[a4paper,12pt]{article}
+%---------------------------------------------------------------
+% Packages
+%---------------------------------------------------------------
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}          % For advanced math typesetting
+\usepackage{amssymb}          % For math symbols
+\usepackage{graphicx}         % To include images
+\usepackage[margin=1in]{geometry} % For setting page margins
+\usepackage{hyperref}         % For creating hyperlinks
+\usepackage{listings}         % For code listings
+\usepackage{xcolor}           % For defining colors
+\usepackage{fancyhdr}         % For custom headers and footers
+\usepackage{booktabs}         % For better looking tables
+\usepackage{float}            % For figure placement
+\usepackage{subcaption}       % For sub-figures
+
+%---------------------------------------------------------------
+% Hyperlink Setup
+%---------------------------------------------------------------
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Texture Packing Report},
+    pdfpagemode=FullScreen,
+}
+
+%---------------------------------------------------------------
+% Code Listing Style
+%---------------------------------------------------------------
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.95}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+%---------------------------------------------------------------
+% Header and Footer
+%---------------------------------------------------------------
+
+\setlength{\headheight}{15pt} 
+\pagestyle{fancy}
+\fancyhf{} 
+\fancyhead[L]{ADS Project VI - Texture Packing}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+%---------------------------------------------------------------
+% Title Information
+%---------------------------------------------------------------
+
+\title{
+    \centering
+    \vspace{1cm}
+    % \includegraphics[width=0.35\paperwidth]{images/cover.png}\par
+    \vspace{2cm}
+    {\Huge\bfseries Project VI:\\[0.5em]Texture Packing\par}
+    \vspace{0.5cm}
+    {Advanced Data Structures and Algorithms Analysis}\par
+    \vspace{1cm}
+}
+\author{
+    \textbf{Group 1} \\[0.5cm]
+    \textit{College of Computer Science and Technology} \\
+    \textit{Zhejiang University}
+}
+\date{\today}
+
+%---------------------------------------------------------------
+% Document Body
+%---------------------------------------------------------------
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+Texture Packing, formally known as the Strip Packing Problem, is a classic NP-hard optimization problem. The objective is to pack a set of $n$ rectangular items, each with a specific width $w_i$ and height $h_i$, into a container of fixed width $W$ and infinite height, such that the total height $H$ used is minimized. The rectangles must be placed orthogonally without rotation, and no two rectangles may overlap.
+
+Since finding the optimal packing height $H_{OPT}$ is computationally intractable for large $n$, this project focuses on designing and analyzing approximation algorithms. We implement and compare five algorithms: Next Fit Decreasing Height (NFDH), First Fit Decreasing Height (FFDH), Best Fit Decreasing Height (BFDH), Bottom-Left (BL), and an online variant of Bottom-Left (BL\_Online). We analyze their time complexity, derive theoretical approximation ratios, and evaluate their empirical performance on randomized test cases.
+
+\section{Algorithm Specification}
+
+\subsection{Data Structures}
+We define a structure `Item` to represent each texture rectangle.
+\begin{lstlisting}[language=C]
+typedef struct {
+    int id;
+    int width;
+    int height;
+    int x;      // x-coordinate of the bottom-left corner
+    int y;      // y-coordinate of the bottom-left corner
+} Item;
+\end{lstlisting}
+The input is an array of `Item`s. For offline algorithms, we first sort this array by height in non-increasing order.
+
+\subsection{Level-Based Algorithms}
+These algorithms pack rectangles into horizontal "levels" (or shelves). The height of a level is determined by the tallest rectangle in it (which is the first one placed, due to sorting).
+
+\subsubsection{Next Fit Decreasing Height (NFDH)}
+NFDH maintains only the \textit{current} level.
+\begin{itemize}
+    \item If the current rectangle fits in the remaining width of the current level, place it there.
+    \item Otherwise, close the current level and start a new one on top of it.
+\end{itemize}
+\textbf{Complexity:} $O(N \log N)$ for sorting, $O(N)$ for packing. Total: $O(N \log N)$.
+
+\subsubsection{First Fit Decreasing Height (FFDH)}
+FFDH maintains a list of all open levels.
+\begin{itemize}
+    \item For each rectangle, scan levels from bottom to top.
+    \item Place the rectangle in the \textit{first} level where it fits.
+    \item If it fits in no existing level, create a new one.
+\end{itemize}
+\textbf{Complexity:} $O(N^2)$ in naive implementation.
+
+\subsubsection{Best Fit Decreasing Height (BFDH)}
+BFDH also maintains all open levels.
+\begin{itemize}
+    \item Place the rectangle in the level that has the \textit{minimum residual width} (remaining space) among all levels where it fits.
+    \item If it fits nowhere, create a new level.
+\end{itemize}
+\textbf{Complexity:} $O(N^2)$.
+
+\subsection{Bottom-Left Algorithms}
+These algorithms do not use the concept of levels.
+
+\subsubsection{Bottom-Left (BL)}
+\begin{itemize}
+    \item Sort rectangles by height.
+    \item For each rectangle, find the lowest possible $y$-coordinate, and then the leftmost $x$-coordinate, such that it does not overlap with any previously placed rectangles.
+    \item This is implemented by iterating through possible $x$ positions and checking for collisions.
+\end{itemize}
+\textbf{Complexity:} $O(N^2)$ (checking against all placed items).
+
+\subsubsection{Online Bottom-Left (BL\_Online)}
+Identical to BL, but skips the sorting step. Rectangles are processed in the order they appear in the input. This simulates a scenario where the entire dataset is not known a priori.
+
+\section{Theoretical Analysis}
+In this section, we derive the approximation ratio for NFDH and state the known bounds for FFDH. Let $H_{ALG}$ be the height produced by the algorithm and $H_{OPT}$ be the optimal height. Let $W$ be the container width.
+
+\subsection{Approximation Ratio of NFDH}
+\textbf{Theorem:} For NFDH, $H_{NFDH} \le 2 \cdot H_{OPT} + h_{max}$, where $h_{max}$ is the height of the tallest rectangle.
+
+\textbf{Proof Derivation:}
+Let the levels created by NFDH be $L_1, L_2, \dots, L_k$, with heights $H_1, H_2, \dots, H_k$.
+Since the rectangles are sorted by height, the height of level $j$, $H_j$, is equal to the height of the first rectangle placed in that level.
+For any level $j < k$, the total width of rectangles in this level, denoted $W(L_j)$, plus the width of the first rectangle in the next level $L_{j+1}$, must exceed the container width $W$. Otherwise, the first rectangle of $L_{j+1}$ would have been placed in $L_j$.
+\[ W(L_j) + w_{first\_of\_j+1} > W \]
+Since $w_{first\_of\_j+1} \le W$, this doesn't directly bound the waste. However, consider the area.
+The total area of all rectangles is $Area = \sum_{i=1}^n w_i h_i$.
+Obviously, $Area \le W \cdot H_{OPT}$.
+
+Consider any two consecutive levels $L_j$ and $L_{j+1}$.
+The first rectangle of $L_{j+1}$ has height $H_{j+1}$. Since we sort by height, all rectangles in $L_j$ have height $\ge H_{j+1}$.
+Thus, the area used in level $L_j$ is at least $W(L_j) \cdot H_{j+1}$.
+Wait, a stronger property holds: The sum of widths in any two consecutive levels $L_j, L_{j+1}$ (except possibly the last) is strictly greater than $W$.
+Actually, a simpler area argument is often used:
+The wasted space in level $L_j$ has width $W - W(L_j)$. This space could not accommodate the first item of $L_{j+1}$.
+It can be proven that the total area occupied by NFDH is at least $\frac{W}{2} \sum_{j=1}^{k-1} H_j$.
+More formally, it has been proven (Coffman et al., 1980) that:
+\[ H_{NFDH} \le 2 H_{OPT} + 1 \]
+(assuming normalized width/height).
+
+\subsection{Approximation Ratio of FFDH}
+FFDH utilizes space better by checking all previous levels.
+\textbf{Theorem:} For FFDH, $H_{FFDH} \le 1.7 \cdot H_{OPT} + h_{max}$.
+This bound is tighter than NFDH. The proof involves complex weighting functions and is beyond the scope of this report, but the intuition is that FFDH never starts a new level unless the item fits in \textit{none} of the existing levels, ensuring that the "average" fill rate of levels is higher.
+
+\section{Test Cases and Results}
+
+\subsection{Test Environment}
+\begin{itemize}
+    \item \textbf{CPU:} Intel Core i7
+    \item \textbf{OS:} Linux (Ubuntu)
+    \item \textbf{Compiler:} GCC (O2 Optimization)
+\end{itemize}
+
+\subsection{Visualizations}
+We visualize the packing results to intuitively compare the algorithms.
+
+\subsubsection{Mode 1: Uniform Distribution}
+Rectangles have random width and height in $[1, 30]$. $N=100$.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../results/visual_NFDH_mode1.png}
+        \caption{NFDH}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../results/visual_FFDH_mode1.png}
+        \caption{FFDH}
+    \end{subfigure}
+    
+    \vspace{1em}
+    
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../results/visual_BFDH_mode1.png}
+        \caption{BFDH}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../results/visual_BL_mode1.png}
+        \caption{BL}
+    \end{subfigure}
+    \caption{Packing Visualization (Uniform Distribution). Note the distinct "levels" in NFDH/FFDH/BFDH versus the unstructured packing in BL.}
+    \label{fig:vis_mode1}
+\end{figure}
+
+\subsubsection{Mode 2: Normal Distribution}
+Rectangles have dimensions following a Normal distribution, leading to more variation.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../results/visual_FFDH_mode2.png}
+        \caption{FFDH (Normal Dist)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../results/visual_BL_mode2.png}
+        \caption{BL (Normal Dist)}
+    \end{subfigure}
+    \caption{Packing Visualization (Normal Distribution). FFDH maintains order while BL tries to fill gaps at the bottom.}
+    \label{fig:vis_mode2}
+\end{figure}
+
+\subsection{Performance Comparison}
+
+\subsubsection{Runtime Analysis}
+Figure \ref{fig:runtime} compares the execution time.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../results/runtime_comparison.png}
+    \caption{Runtime Comparison. NFDH/FFDH/BFDH are extremely fast (near 0ms for small N), while BL algorithms show quadratic growth.}
+    \label{fig:runtime}
+\end{figure}
+
+\subsubsection{Fill Ratio Analysis}
+Figure \ref{fig:ratio} compares the packing efficiency (Fill Ratio).
+\begin{figure}[H]
+    \centering
+    \caption{Fill Ratio Comparison. FFDH and BFD

@@ -1,0 +1,55 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\babel@aux[2]{}
+\@nameuse{bbl@beforestart}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\babel@aux{english}{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{3}{section.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces The workflow of MapReduce. Input files are split and processed by Map workers. Intermediate results are partitioned and sorted before being passed to Reduce workers, which generate the final output files.\relax }}{3}{figure.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:mapreduce_workflow}{{1}{3}{The workflow of MapReduce. Input files are split and processed by Map workers. Intermediate results are partitioned and sorted before being passed to Reduce workers, which generate the final output files.\relax }{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Algorithm Specification}{4}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Data Structures}{4}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Framework Design}{4}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.1}MapReduce Structure}{4}{subsubsection.2.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.2}Parallelism with Pthreads}{5}{subsubsection.2.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.3}Synchronization}{5}{subsubsection.2.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Map Function}{5}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Reduce Function}{6}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Serial Implementation}{6}{subsection.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Testing \& Performance Analysis}{6}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Test Environment}{6}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Test Data Generation}{7}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Correctness Verification}{7}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Performance Comparison: Serial vs. Parallel}{7}{subsection.3.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Execution time comparison between Serial and Parallel implementations.\relax }}{7}{table.caption.3}\protected@file@percent }
+\newlabel{tab:perf_scale}{{1}{7}{Execution time comparison between Serial and Parallel implementations.\relax }{table.caption.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Performance Comparison: Serial vs. Parallel (4 Threads). Note: For small datasets, the overhead of thread management in the parallel version may outweigh the benefits of parallel processing.\relax }}{8}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:plot_scale}{{2}{8}{Performance Comparison: Serial vs. Parallel (4 Threads). Note: For small datasets, the overhead of thread management in the parallel version may outweigh the benefits of parallel processing.\relax }{figure.caption.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.1}Analysis}{8}{subsubsection.3.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Scalability Analysis: Impact of Thread Count}{8}{subsection.3.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Execution time for different thread counts (Input Size: 200,000 words).\relax }}{9}{table.caption.5}\protected@file@percent }
+\newlabel{tab:perf_threads}{{2}{9}{Execution time for different thread counts (Input Size: 200,000 words).\relax }{table.caption.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Impact of Thread Count on Execution Time. Increasing threads beyond the physical core count or for small workloads can lead to performance degradation due to context switching and synchronization overhead.\relax }}{9}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:plot_threads}{{3}{9}{Impact of Thread Count on Execution Time. Increasing threads beyond the physical core count or for small workloads can lead to performance degradation due to context switching and synchronization overhead.\relax }{figure.caption.6}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.1}Analysis}{9}{subsubsection.3.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Conclusion}{9}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Challenges Faced}{10}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Future Improvements}{10}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Declaration}{10}{section.5}\protected@file@percent }
+\gdef \@abspage@last{10}

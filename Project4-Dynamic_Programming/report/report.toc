@@ -1,0 +1,29 @@
+\babel@toc {english}{}\relax 
+\contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
+\contentsline {section}{\numberline {2}Algorithm Specification}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Data Structures}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Algorithm 1: Complementary Counting with Fenwick Tree}{3}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Main Idea}{3}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Dynamic Programming Formulation}{3}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Fenwick Tree Optimization}{4}{subsubsection.2.2.3}%
+\contentsline {subsubsection}{\numberline {2.2.4}Pseudocode}{4}{subsubsection.2.2.4}%
+\contentsline {subsection}{\numberline {2.3}Other Algorithms}{5}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Workflow}{5}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Test Cases and Results}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Test Environment}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Test Case Design}{6}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Experimental Results}{6}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Performance Analysis}{7}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Complexity Analysis of the Optimized Algorithm}{7}{subsection.4.1}%
+\contentsline {paragraph}{Time Complexity: $O(N \qopname \relax o{log}V)$}{7}{section*.2}%
+\contentsline {paragraph}{Space Complexity: $O(V)$}{7}{section*.3}%
+\contentsline {subsection}{\numberline {4.2}Analysis of Experimental Results}{7}{subsection.4.2}%
+\contentsline {paragraph}{Algorithm 4: Brute Force ($O(2^N)$, Red Curve)}{7}{section*.4}%
+\contentsline {paragraph}{Algorithm 2: Direct DP ($O(N^2)$, Blue Curve)}{8}{section*.5}%
+\contentsline {paragraph}{Algorithm 3: Complementary DP without Fenwick Tree ($O(N \cdot V)$, Orange Curve)}{8}{section*.6}%
+\contentsline {paragraph}{Algorithm 1: Optimized DP with Fenwick Tree ($O(N \qopname \relax o{log}V)$, Green Curve)}{8}{section*.7}%
+\contentsline {subsection}{\numberline {4.3}Comparative Analysis and Key Observations}{8}{subsection.4.3}%
+\contentsline {paragraph}{Asymptotic Behavior vs. Constant Factors}{8}{section*.8}%
+\contentsline {paragraph}{The Power of Optimization}{9}{section*.9}%
+\contentsline {section}{\numberline {5}Conclusion}{9}{section.5}%
+\contentsline {section}{\numberline {6}Declaration}{9}{section.6}%
